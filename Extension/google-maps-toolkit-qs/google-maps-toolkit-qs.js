@@ -9,21 +9,22 @@ require.config({
 });
 
 define( [
-  'jquery',
-  'js/qlik',
-  './extension-properties',
-  './js/hypercubes',
-  './js/markers',
-  './js/shapes',
-  './js/circles',
-  './js/lines',
-  './js/heatmaps',
-  './js/directions',
-  'css!./styles/main-style.css',
-  'css!./styles/markerstyle.css',
-  'markerclusterer'
+	'jquery',
+	'js/qlik',
+	'text!./template.html',
+	'./extension-properties',
+	'./js/hypercubes',
+	'./js/markers',
+	'./js/shapes',
+	'./js/circles',
+	'./js/lines',
+	'./js/heatmaps',
+	'./js/directions',
+	'css!./styles/main-style.css',
+	'css!./styles/markerstyle.css',
+	'markerclusterer'
   ],
-function ($, qlik, extension_properties, MarkerClusterer) {
+function ($, qlik, template, extension_properties, MarkerClusterer) {
 	return {
     initialProperties: {
       version: 1.0,
@@ -40,7 +41,7 @@ function ($, qlik, extension_properties, MarkerClusterer) {
     snapshot : {
      canTakeSnapshot : true
     },
-
+	template : template,
     definition: extension_properties,
 
 		paint: function ($element, layout) {
@@ -200,6 +201,19 @@ function ($, qlik, extension_properties, MarkerClusterer) {
 		                                  },
 		                                  drivingModeConfig: layout.properties.p2pConfig.drivingModeConfig
 		                    }
+// 		                    $directionPanelDiv = $(document.createElement('div'));
+// 							$directionPanelDiv.id = 'directionsPanel';
+
+// 						  	$element.append($directionPanelDiv);
+
+// 						  	$directionPanelTitle = $(document.createElement('h1'));
+// 						  	$directionPanelTitle.addClass('apiWarningTitle');
+// 						  	$directionPanelTitle.text('Panels up in here!');
+// 						  	$directionPanelDiv.append($directionPanelTitle);
+
+// console.log('directionPanelDiv', $directionPanelDiv);
+// console.log('updated element', $element);
+
 		                  drawDirections(null, directionsProperties, null);
 		                  }else{
 		                    var directionsProperties = {

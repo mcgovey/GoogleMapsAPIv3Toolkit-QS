@@ -8,17 +8,19 @@ function drawDirections(directionsCube, directionsProperties, app){
 	directionsDisplay = new google.maps.DirectionsRenderer();
 	directionsDisplay.setMap(map);	
 
-	var check_driving = false;
+	var valid_travel_method = false;
 	var travel_mode;
 	switch (directionsProperties.drivingModeConfig.drivingMode){
 		case "DRIVING": travel_mode=google.maps.TravelMode.DRIVING;
-						check_driving=true;
+						valid_travel_method=true;
 			     		break;
 		case "WALKING": travel_mode=google.maps.TravelMode.WALKING;
-						check_driving=true;
+						valid_travel_method=true;
 			     		break;
-
-		default: 		check_driving=false;
+		case "TRANSIT": travel_mode=google.maps.TravelMode.TRANSIT;
+						valid_travel_method=true;
+			     		break;
+		default: 		valid_travel_method=false;
 				 		break;
 	}
 
@@ -30,7 +32,7 @@ function drawDirections(directionsCube, directionsProperties, app){
 		var request = {
 		      origin:start,
 		      destination:end,
-		      travelMode: check_driving ? travel_mode : google.maps.TravelMode.DRIVING
+		      travelMode: valid_travel_method ? travel_mode : google.maps.TravelMode.DRIVING
 		  };
 
 		  directionsService.route(request, function(response, status) {
@@ -62,7 +64,7 @@ function drawDirections(directionsCube, directionsProperties, app){
 		    origin:start,
 		    destination:end,
 		    waypoints: waypts,
-		    travelMode: check_driving ? travel_mode : google.maps.TravelMode.DRIVING,
+		    travelMode: valid_travel_method ? travel_mode : google.maps.TravelMode.DRIVING,
 		    optimizeWaypoints: false
 		};
 

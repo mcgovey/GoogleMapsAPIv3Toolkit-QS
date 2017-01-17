@@ -33,3 +33,19 @@
 .spaceTop{
 	margin-top: 1em;
 }
+
+.mapDirPanelShown{
+	width: 66%;
+}
+
+.mapDirPanelHidden{
+	width: 100%;
+}
+
+.directionsDirPanelShown{
+	width: 33%;
+}
+
+.directionsDirPanelHidden{
+	width: 0;
+}

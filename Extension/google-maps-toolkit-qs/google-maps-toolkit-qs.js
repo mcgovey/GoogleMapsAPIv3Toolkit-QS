@@ -45,10 +45,19 @@ function ($, qlik, template, extension_properties, MarkerClusterer) {
     definition: extension_properties,
 
 		paint: function ($element, layout) {
-		  
-		  layout2=layout;
 
-		  app_this = this;
+			layout2=layout;
+
+			app_this = this;
+
+			// set layout variable to create id used to set the div id
+			this.$scope.$watch("layout.vars", function (newVal, oldVal) {
+				app_this.$scope.vars = {
+					id: layout.qInfo.qId,
+					panelDisplay: layout.properties.p2pConfig.drivingModeConfig.mapPanelBool,
+					calcConditionStmt: layout.properties.mapData.calculationConditionMessage !="" ? layout.properties.mapData.calculationConditionMessage : "Calculation condition unfulfilled"
+				};
+			});
 
 		  if(layout.properties.googleAPIKey==="" || layout.properties.googleAPIKey === null){
 		  	$element.empty();
@@ -91,8 +100,12 @@ function ($, qlik, template, extension_properties, MarkerClusterer) {
 
 			$requestAPIKeyParagraph.append(" to create it.");
 		  }else{
-		  	$element.empty();
+		  	//control initialization to only paint once
+			if(this.painted) return;  
+			this.painted = true; 
 		  	
+console.log('calc condition', layout.properties.mapData.calculationCondition);
+
 		  	$.getScript("https://maps.google.com/maps/api/js?libraries=visualization&sensor=false&key="+layout.properties.googleAPIKey, function(){
 		      //checking for the coordinates field info in the list
 		      var dimension_info="";
@@ -201,20 +214,8 @@ function ($, qlik, template, extension_properties, MarkerClusterer) {
 		                                  },
 		                                  drivingModeConfig: layout.properties.p2pConfig.drivingModeConfig
 		                    }
-// 		                    $directionPanelDiv = $(document.createElement('div'));
-// 							$directionPanelDiv.id = 'directionsPanel';
 
-// 						  	$element.append($directionPanelDiv);
-
-// 						  	$directionPanelTitle = $(document.createElement('h1'));
-// 						  	$directionPanelTitle.addClass('apiWarningTitle');
-// 						  	$directionPanelTitle.text('Panels up in here!');
-// 						  	$directionPanelDiv.append($directionPanelTitle);
-
-// console.log('directionPanelDiv', $directionPanelDiv);
-// console.log('updated element', $element);
-
-		                  drawDirections(null, directionsProperties, null);
+		                  	drawDirections(null, directionsProperties, null, layout.qInfo.qId);
 		                  }else{
 		                    var directionsProperties = {
 		                                  mapData: layout.properties.mapData,
@@ -236,30 +237,34 @@ function ($, qlik, template, extension_properties, MarkerClusterer) {
       ************************************/
       function createMap(calc_condition){
         if(calc_condition){
-          $element.css("background-color","rgb(229, 227, 223)");
-          var map_types=new Array();
-          if(layout.properties.mapTypes.roadMap) map_types.push(google.maps.MapTypeId.ROADMAP);
-          if(layout.properties.mapTypes.satellite) map_types.push(google.maps.MapTypeId.SATELLITE);
-          if(layout.properties.mapTypes.hybrid) map_types.push(google.maps.MapTypeId.HYBRID);
-          if(layout.properties.mapTypes.terrain) map_types.push(google.maps.MapTypeId.TERRAIN);
+			// $element.css("background-color","rgb(229, 227, 223)");
 
-          var mapOptions = {
-            mapTypeControlOptions: {
-              mapTypeIds: map_types
-              },
-            mapTypeId: map_types[0],
-            streetViewControl: layout.properties.mapViews.streetView,
-            zoom: layout.properties.zoomAPI.defaultZoom
-          };
+			$element.id = 'mapext_' + layout.qInfo.qId;
+			var map_types=new Array();
+			if(layout.properties.mapTypes.roadMap) map_types.push(google.maps.MapTypeId.ROADMAP);
+			if(layout.properties.mapTypes.satellite) map_types.push(google.maps.MapTypeId.SATELLITE);
+			if(layout.properties.mapTypes.hybrid) map_types.push(google.maps.MapTypeId.HYBRID);
+			if(layout.properties.mapTypes.terrain) map_types.push(google.maps.MapTypeId.TERRAIN);
 
-          map = new google.maps.Map($element.get(0), mapOptions);
+			var mapOptions = {
+				mapTypeControlOptions: {
+					mapTypeIds: map_types
+				},
+				mapTypeId: map_types[0],
+				streetViewControl: layout.properties.mapViews.streetView,
+				zoom: layout.properties.zoomAPI.defaultZoom
+			};
 
-          layout.properties.mapViews.hr45degree==1? map.setTilt(45) : map.setTilt(0);
+			var mapPanel = $('#mapext_' + layout.qInfo.qId + ' #mapPanel').get(0);
 
-          latlngbounds = new google.maps.LatLngBounds();
+			map = new google.maps.Map(mapPanel, mapOptions);
 
-          updateMapPosition();
-        }
+			layout.properties.mapViews.hr45degree==1? map.setTilt(45) : map.setTilt(0);
+
+			latlngbounds = new google.maps.LatLngBounds();
+
+			updateMapPosition();
+			}
         else{
           $element.css("background-color","rgba(255,255,255,0)");
           $element.html(layout.properties.mapData.calculationConditionMessage=='null' || layout.properties.mapData.calculationConditionMessage=='' ? 'Calculation condition unfulfilled' : layout.properties.mapData.calculationConditionMessage);

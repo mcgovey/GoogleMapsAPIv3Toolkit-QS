@@ -888,9 +888,22 @@ define( [], function () {
 						component: "dropdown",
 						options: [
 								{value: "DRIVING", label: "Driving"},
-								{value: "WALKING", label: "Walking"}
+								{value: "WALKING", label: "Walking"},
+								{value: "TRANSIT", label: "Transit"}
 						],
 						defaultValue:"DRIVING",
+						show: function (data) { return data.properties.p2pConfig.drivingModeConfig.singleDrivingMode; }
+					},
+					directionsMapPanel:{
+						ref: "properties.p2pConfig.drivingModeConfig.mapPanelBool",
+						label: "Map Panel Directions",
+						type: "boolean",
+						component: "switch",
+						options: [
+								{value: true, label: "Displayed"},
+								{value: false, label: "Hidden"}
+						],
+						defaultValue: false,
 						show: function (data) { return data.properties.p2pConfig.drivingModeConfig.singleDrivingMode; }
 					}
 				}//p2pConfiguration.items.drivingModeConfig.items
@@ -913,6 +926,14 @@ define( [], function () {
 			p2pConfig: p2pConfiguration,
 			appearance: appearanceSection,
 			dimension: dimensions
+			// ,addons: {
+			// 	uses: "addons",
+			// 	items: {
+			// 		dataHandling: {
+			// 			uses: "dataHandling"
+			// 		}
+			// 	}
+			// }
 		}
 	};
 }

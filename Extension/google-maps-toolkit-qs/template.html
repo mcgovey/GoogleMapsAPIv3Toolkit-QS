@@ -1,6 +1,4 @@
-<div qv-extension style="height: 100%; position: relative; overflow: auto;">
-	<div id="mapPanel" style="height: 100%; position: relative; width: 50%"></div>
-	<div id="directionsPanel" style="height: 100%; width: 50%; float: right;">
-		<h1>Testing header</h1>
-	</div>
+<div qv-extension style="height: 100%; position: relative; overflow: auto;" ng-attr-id="{{ 'mapext_' + vars.id }}">
+	<div id="mapPanel" style="height: 100%; position: relative; float: left;" ng-class="{mapDirPanelShown: vars.panelDisplay == true, mapDirPanelHidden: vars.panelDisplay == false}"></div>
+	<div id="directionsPanel" style="height: 100%; float: right;" ng-class="{directionsDirPanelShown: vars.panelDisplay == true, directionsDirPanelHidden: vars.panelDisplay == false}"></div>
 </div>

@@ -1,12 +1,17 @@
 /***********************************
 ** Directions
 ************************************/
-function drawDirections(directionsCube, directionsProperties, app){
+function drawDirections(directionsCube, directionsProperties, app, divId){
+	// empty the direction panel
+	$('#mapext_' + divId + ' #directionsPanel').empty();
+
+	// setup the display service API objects
 	var directionsDisplay;
 	var directionsService = new google.maps.DirectionsService();
 
 	directionsDisplay = new google.maps.DirectionsRenderer();
-	directionsDisplay.setMap(map);	
+	directionsDisplay.setMap(map);
+	directionsDisplay.setPanel($('#mapext_' + divId + ' #directionsPanel').get(0));
 
 	var valid_travel_method = false;
 	var travel_mode;

@@ -51,13 +51,27 @@ function ($, qlik, template, extension_properties, MarkerClusterer) {
 			app_this = this;
 
 			// set layout variable to create id used to set the div id
-			this.$scope.$watch("layout.vars", function (newVal, oldVal) {
+			this.$scope.id= layout.qInfo.qId;
+
+console.log('map properties', layout.properties.mapData);
+
+			// set layout variables for panel display show/hide
+			this.$scope.$watch("layout.properties", function (newVal, oldVal) {
+				let calcCondition = ((layout.properties.mapData.calculationConditionToggle==true && layout.properties.mapData.calculationCondition==-1) || layout.properties.mapData.calculationConditionToggle!=true) ? -1 : 0,
+					calcConditionMsg = (layout.properties.mapData.calculationConditionMessage === "" || layout.properties.mapData.calculationConditionMessage === null)? "Calculation condition unfulfilled" : layout.properties.mapData.calculationConditionMessage;
+
 				app_this.$scope.vars = {
-					id: layout.qInfo.qId,
-					panelDisplay: layout.properties.p2pConfig.drivingModeConfig.mapPanelBool,
-					calcConditionStmt: layout.properties.mapData.calculationConditionMessage !="" ? layout.properties.mapData.calculationConditionMessage : "Calculation condition unfulfilled"
+					panelDisplay		: layout.properties.p2pConfig.drivingModeConfig.mapPanelBool,
+					calcCondition 		: calcCondition,
+					calcConditionStmt	: calcConditionMsg
 				};
+
+				//set flag to re-render below anytime preferences are changed
+				this.painted = false;
+
+console.log( 'condition', calcCondition, 'msg', calcConditionMsg, 'painted', this.painted );
 			});
+
 
 		  if(layout.properties.googleAPIKey==="" || layout.properties.googleAPIKey === null){
 		  	$element.empty();
@@ -99,12 +113,14 @@ function ($, qlik, template, extension_properties, MarkerClusterer) {
 			$googleCreateKey.attr('target', '_blank');
 
 			$requestAPIKeyParagraph.append(" to create it.");
+		  }else if(layout.properties.mapData.calculationConditionToggle==true && layout.properties.mapData.calculationCondition!=-1){
+		  	console.log('calculation condition not fulfilled');
+		  	return;
 		  }else{
 		  	//control initialization to only paint once
 			if(this.painted) return;  
 			this.painted = true; 
 		  	
-console.log('calc condition', layout.properties.mapData.calculationCondition);
 
 		  	$.getScript("https://maps.google.com/maps/api/js?libraries=visualization&sensor=false&key="+layout.properties.googleAPIKey, function(){
 		      //checking for the coordinates field info in the list
@@ -124,7 +140,7 @@ console.log('calc condition', layout.properties.mapData.calculationCondition);
 		      app.createCube( { qDimensions : [
 		            { qDef : { qFieldDefs : ["="+layout.properties.mapData.coordinates] } }
 		            ], qMeasures : [{ qDef : { qDef : layout.properties.mapData.measure, qLabel :"Measure" } }],
-		            qCalcCond: layout.properties.mapData.calculationCondition,
+		            // qCalcCond: layout.properties.mapData.calculationCondition,
 		            qInitialDataFetch: [{qHeight: 10, qWidth: 1}]}, function (reply){ 
 		              if(reply.qHyperCube.qError){//calculation condition unfulfilled or error
 		                if(reply.qHyperCube.qError.qErrorCode=7005){ 
@@ -255,7 +271,7 @@ console.log('calc condition', layout.properties.mapData.calculationCondition);
 				zoom: layout.properties.zoomAPI.defaultZoom
 			};
 
-			var mapPanel = $('#mapext_' + layout.qInfo.qId + ' #mapPanel').get(0);
+			var mapPanel = $('#' + layout.qInfo.qId + 'mapPanel').get(0);
 
 			map = new google.maps.Map(mapPanel, mapOptions);
 

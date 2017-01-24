@@ -139,7 +139,7 @@ define( [], function () {
 						ref: "properties.mapData.calculationCondition",
 						label: "Calculation Condition",
 						type: "string",
-						expression: "",
+						expression: "optional",
 						show: function( data ){ return data.properties.mapData.calculationConditionToggle; }
 					},//basicConfigurations.items.mapData.items.calculationCondition
 					calculationConditionMessage: {

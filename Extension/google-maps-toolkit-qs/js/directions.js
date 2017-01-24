@@ -11,7 +11,9 @@ function drawDirections(directionsCube, directionsProperties, app, divId){
 
 	directionsDisplay = new google.maps.DirectionsRenderer();
 	directionsDisplay.setMap(map);
-	directionsDisplay.setPanel($('#mapext_' + divId + ' #directionsPanel').get(0));
+	//empty panel then add directions
+	$('#' + divId + 'directionsPanel').empty();
+	directionsDisplay.setPanel($('#' + divId + 'directionsPanel').get(0));
 
 	var valid_travel_method = false;
 	var travel_mode;
